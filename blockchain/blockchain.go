@@ -74,19 +74,18 @@ func isOutputSpent(txID string, outIdx int, spentTxs map[string]map[int]struct{}
 	return false
 }
 
-func (bc *BlockChain) FindUTXOs(address []byte) (int, map[string]int) {
-	unspentOuts := make(map[string]int)
+func (bc *BlockChain) FindUTXOs(address []byte) (int, map[string][]int) {
+	unspentOuts := make(map[string][]int)
 	unspentTxs := bc.FindUnspentTransactions(address)
 	accumulated := 0
 
-Work:
 	for _, tx := range unspentTxs {
 		txID := hex.EncodeToString(tx.ID)
+
 		for outIdx, out := range tx.Outputs {
 			if out.ToAddressRight(address) {
 				accumulated += out.Value
-				unspentOuts[txID] = outIdx
-				continue Work
+				unspentOuts[txID] = append(unspentOuts[txID], outIdx)
 			}
 		}
 	}
