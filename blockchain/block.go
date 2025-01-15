@@ -12,12 +12,12 @@ import (
 )
 
 type Block struct {
-	Timestamp    int64
-	Hash         []byte
-	PrevHash     []byte
-	Nonce        int64
-	Target       []byte
-	Transactions []*transaction.Transaction
+	Timestamp    int64                      // 区块被创建的是时间
+	Hash         []byte                     // 区块大哈希值
+	PrevHash     []byte                     // 上一个区块的哈希值
+	Nonce        int64                      // 随机数, 用于PoW
+	Target       []byte                     // 目标值, 用于验证PoW
+	Transactions []*transaction.Transaction // 区块中包含的交易
 }
 
 func (b *Block) SetHash() {
