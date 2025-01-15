@@ -2,15 +2,15 @@ package transaction
 
 import "bytes"
 
-type TxOutput struct {
-	Value     int
-	ToAddress []byte
-}
-
 type TxInput struct {
 	TxID        []byte
 	OutIdx      int
 	FromAddress []byte
+}
+
+type TxOutput struct {
+	Value     int
+	ToAddress []byte
 }
 
 func (in *TxInput) FromAddressRight(address []byte) bool {
