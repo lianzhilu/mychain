@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"github.com/lianzhilu/mychain/utils"
+	"math/big"
 	"time"
 )
 
@@ -14,6 +15,8 @@ type Block struct {
 	Hash      []byte
 	PrevHash  []byte
 	Data      []byte
+	Nonce     int64
+	Target    []byte
 }
 
 func (b *Block) SetHash() {
@@ -28,7 +31,10 @@ func CreateBlock(prevHash, data []byte) *Block {
 		Hash:      []byte{},
 		PrevHash:  prevHash,
 		Data:      data,
+		Nonce:     0,
+		Target:    []byte{},
 	}
+	block.InitPoW()
 	block.SetHash()
 	return &block
 }
@@ -36,4 +42,18 @@ func CreateBlock(prevHash, data []byte) *Block {
 func GenesisBlock() *Block {
 	genesisWords := "HelloWorld"
 	return CreateBlock([]byte{}, []byte(genesisWords))
+}
+
+func (b *Block) ValidatePoW() bool {
+	var intHash big.Int
+	var intTarget big.Int
+	var hash [32]byte
+	intTarget.SetBytes(b.Target)
+	data := b.GetDataBaseNonce(b.Nonce)
+	hash = sha256.Sum256(data)
+	intHash.SetBytes(hash[:])
+	if intHash.Cmp(&intTarget) == -1 {
+		return true
+	}
+	return false
 }
