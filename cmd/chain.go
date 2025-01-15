@@ -1,10 +1,9 @@
 package chain
 
 import (
-	"fmt"
 	"github.com/lianzhilu/mychain/blockchain"
+	"github.com/lianzhilu/mychain/transaction"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 func NewCommand() *cobra.Command {
@@ -18,20 +17,14 @@ func NewCommand() *cobra.Command {
 }
 
 func RunChain() {
-	bc := blockchain.CreateBlockChain()
-	time.Sleep(time.Second)
-	bc.AddBlock("first")
-	time.Sleep(time.Second)
-	bc.AddBlock("second")
-	time.Sleep(time.Second)
-	bc.AddBlock("third")
-	time.Sleep(time.Second)
+	txPool := make([]*transaction.Transaction, 0)
+	var tempTx *transaction.Transaction
+	var ok bool
+	chain := blockchain.CreateBlockChain()
 
-	for num, block := range bc.Blocks {
-		fmt.Printf("number:%d Timestamp: %d\n", num, block.Timestamp)
-		fmt.Printf("number:%d hash: %x\n", num, block.Hash)
-		fmt.Printf("number:%d Previous hash: %x\n", num, block.PrevHash)
-		fmt.Printf("number:%d data: %s\n", num, block.Data)
-		fmt.Println("POW validation:", block.ValidatePoW())
+	tempTx, ok = chain.CreateTransaction([]byte("first"), []byte("second"), 100)
+	if ok {
+		txPool = append(txPool, tempTx)
 	}
+	chain.Mine(txPool)
 }
